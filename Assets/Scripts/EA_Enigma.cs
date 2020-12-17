@@ -47,14 +47,22 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
 
     void RotateRotor(int _id)
     {
-        bool _isAboutToNotch = EA_RotorManager.Instance.CheckRotorAboutToNotch(_id);
+        /*bool _isAboutToNotch = EA_RotorManager.Instance.CheckRotorAboutToNotch(_id);
         if (_isAboutToNotch)
         {
             EA_RotorManager.Instance.RotateRotor(_id);
             RotateRotor(_id + 1);
         }
         else
-            EA_RotorManager.Instance.RotateRotor(_id);
+            EA_RotorManager.Instance.RotateRotor(_id);*/
+        bool _isAboutToNotch = EA_RotorManager.Instance.CheckRotorAboutToNotch(_id);
+        if (_isAboutToNotch)
+        {
+            EA_RotorManager.Instance.SetNextTarget(_id);
+            RotateRotor(_id + 1);
+        }
+        else
+            EA_RotorManager.Instance.SetNextTarget(_id);
     }
 
     char TransitionInputRotor(char _char,EA_Rotor _rotor, bool _way)

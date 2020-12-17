@@ -13,6 +13,8 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
     #region Crypte/Decrypte
     [SerializeField] TMP_InputField enterText = null;
     [SerializeField] TMP_Text resultText = null;
+
+    public TMP_InputField EnterText => enterText;
     #endregion
 
     #region Config
@@ -25,18 +27,25 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
     #region Error Rotor
     [SerializeField] Transform panelErrorRotor = null;
     [SerializeField] TMP_Text textRotorError = null;
-    [SerializeField] bool containsError = false;
 
     public Transform PanelErrorRotor => panelErrorRotor;
     public TMP_Text TextRotorError => textRotorError;
-    public bool ContainsError { get => containsError; set => containsError = value; }
     #endregion
 
-    public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset && IsValidRotorErrorUI;
+    #region Error Notch
+    [SerializeField] Transform panelErrorNotch = null;
+    [SerializeField] TMP_Text textNotchError = null;
+
+    public Transform PanelErrorNotch => panelErrorNotch;
+    public TMP_Text TextNotchError => textNotchError;
+    #endregion
+
+    public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset && IsValidRotorErrorUI && IsValidNotchErrorUI;
     public bool IsValidReset => resetButton;
     public bool IsValidQuit => quitButton;
     public bool IsValidInputResult => enterText && resultPanel && resultText;
     public bool IsValidRotorErrorUI => panelErrorRotor && textRotorError;
+    public bool IsValidNotchErrorUI => panelErrorNotch && textNotchError;
 
     protected override void Awake()
     {
@@ -102,7 +111,6 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
         if (string.IsNullOrEmpty(enterText.text)) return '\0';
         char[] allChars = enterText.text.ToUpper().ToCharArray();
         char _lastChar = allChars[allChars.Length-1];
-        //if(char.IsLetter(_lastChar) && !_lastChar.Equals('é') && !_lastChar.Equals('è')) return _lastChar;
         if(Regex.Match(_lastChar.ToString(),@"[A-Z]|[a-z]").Success) return _lastChar;
         return '\0';
     }

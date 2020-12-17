@@ -6236,7 +6236,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 3
+  speedRota: 100
   encodeLetters: 42004400460048004a004c004300500052005400580056005a004e005900450049005700470041004b004d005500530051004f00
+  minDistance: 1
   notchLetter: 86
 --- !u!1 &1557851068583827023
 GameObject:
@@ -6888,7 +6890,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &431572064262538829
 Transform:
   m_ObjectHideFlags: 0
@@ -7946,7 +7948,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 2
+  speedRota: 100
   encodeLetters: 41004a0044004b005300490052005500580042004c004800570054004d004300510047005a004e0050005900460056004f004500
+  minDistance: 1
   notchLetter: 69
 --- !u!1 &4696133029259535737
 GameObject:
@@ -8154,7 +8158,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: 1
+  speedRota: 100
   encodeLetters: 45004b004d0046004c0047004400510056005a004e0054004f005700590048005800550053005000410049004200520043004a00
+  minDistance: 1
   notchLetter: 81
 --- !u!1 &4925801706280424357
 GameObject:

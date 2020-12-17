@@ -21,9 +21,18 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
         OnTick = null;
     }
 
-    private void Update()
+   
+    void InitRotors()
     {
-        //RotateRotor(1);
+        foreach (KeyValuePair<int, EA_Rotor> _rotor in items)
+        {
+            _rotor.Value.InitRotor();
+        }
+        EA_ErrorManager.Instance.MergeErrorsRotor(EA_ErrorManager.Instance.ErrorsRotor);
+        EA_ErrorManager.Instance.SetUIErrorPanelRotor();
+
+        EA_ErrorManager.Instance.MergeErrorsNotch(EA_ErrorManager.Instance.ErrorsNotch);
+        EA_ErrorManager.Instance.SetUIErrorPanelNotch();
     }
 
     public void Add(EA_Rotor _rotor)
@@ -61,11 +70,12 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
 
     public void ResetAllRotors()
     {
-        foreach (KeyValuePair<int,EA_Rotor> _rotor in items)
+        /*foreach (KeyValuePair<int,EA_Rotor> _rotor in items)
         {
             _rotor.Value.ResetRotor();
             Debug.Log($"Rotor {_rotor.Value.ID} reset");
-        }
+        }*/
+        InitRotors();
         OnTick.Invoke();
     }
 
@@ -73,6 +83,12 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
     {
         EA_Rotor _rotor = Get(_id);
         if (_rotor) _rotor.RotateRotor();
+    }
+
+    public void SetNextTarget(int _id)
+    {
+        EA_Rotor _rotor = Get(_id);
+        if (_rotor) _rotor.SetNextTarget();
     }
 
     public bool CheckRotorAboutToNotch(int _id)

@@ -5,11 +5,14 @@ using UnityEngine;
 public class EA_Rotor : MonoBehaviour, IItem<int>
 {
     [SerializeField] int id = 0;
+    [SerializeField] float speedRota = 5;
     Dictionary<char, char> encodageAller = new Dictionary<char, char>();
     Dictionary<char, char> encodageRetour = new Dictionary<char, char>();
     [SerializeField] char[] encodeLetters = new char[26];
-    /*[SerializeField] char firstLetterRotorBegin = 'A';*/
+    [SerializeField, Range(0, 100)] float minDistance = 1;
     [SerializeField] char notchLetter = 'A';
+
+    Vector3 targetRota = Vector3.zero;
 
     float valueToFixTheRotorDoor = 5.697001f;
 
@@ -17,6 +20,11 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     int numberFirstLetter = 0;  //Place dans l'alphabet - 1
 
     public int ID => id;
+    public bool IsTurned()
+    {
+        if((transform.eulerAngles.z - targetRota.z) < 0)
+        Vector3.Distance(transform.eulerAngles, targetRota) < minDistance;
+    }
     public bool IsAboutToNotch => firstLetter.Equals(notchLetter);
     public bool IsEnabled => true;
     public int NumberFirstLetter => numberFirstLetter;
@@ -24,6 +32,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     public Dictionary<char, char> EncodageRetour => encodageRetour;
     private void Start()
     {
+        targetRota = transform.eulerAngles;
         InitRotor();
         InitRotorEncodageAller();
         InitRotorEncodageRetour();
@@ -35,56 +44,36 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         EA_RotorManager.Instance.Remove(id);
     }
 
-    void InitRotor()
+    private void Update()
+    {
+        RotateRotor();
+    }
+
+    public void InitRotor()
     {
         string _configRotor = EA_UIManager.Instance.RotorConfig[id-1].text;      //id-1 because Rotor1 has id 1 but in the RotorConfig, its letter is the 0
         string _configNotch = EA_UIManager.Instance.NotchConfig[id-1].text;
 
         bool isErrorRotor = _configRotor.Length != 1;
-        bool hasRotorError = EA_UIManager.Instance.ContainsError;
+        bool isErrorNotch = _configNotch.Length != 1;
 
         if (isErrorRotor)
         {
-            InitErrorRotorPanel();
-            return;
+            EA_ErrorManager.Instance.ErrorsRotor.Add(EA_ErrorManager.Instance.ErrorRotor(id));
         }
 
-        if (_configNotch.Length != 1)
+        if (isErrorNotch)
         {
-            Debug.Log($"Erreur NOtch {id}"); //ERREUR UI
-            return;
+            EA_ErrorManager.Instance.ErrorsNotch.Add(EA_ErrorManager.Instance.ErrorNotch(id));
         }
 
-        if (!hasRotorError)
-        {
-            EA_UIManager.Instance.ResetText(EA_UIManager.Instance.TextRotorError);
-            EA_UIManager.Instance.SetActiveUI(EA_UIManager.Instance.PanelErrorRotor, false);
+        if (isErrorNotch || isErrorRotor) return;       //Permet d'afficher les problèmes de configuration rotor ET de configuration de notch pour un même rotor
 
-            firstLetter = char.ToUpper(_configRotor.ToCharArray()[0]);
-            numberFirstLetter = EA_Letters.lettersToInt[firstLetter];
-            transform.eulerAngles = new Vector3(0, 0, valueToFixTheRotorDoor - (360f / 26f) * numberFirstLetter + 1);
+        firstLetter = char.ToUpper(_configRotor.ToCharArray()[0]);
+        numberFirstLetter = EA_Letters.lettersToInt[firstLetter];
+        transform.eulerAngles = new Vector3(0, 0, valueToFixTheRotorDoor - (360f / 26f) * numberFirstLetter + 1);
 
-            notchLetter = char.ToUpper(_configNotch.ToCharArray()[0]);
-        }
-    }
-
-    void InitErrorRotorPanel()
-    {
-
-            if (EA_UIManager.Instance.IsValidRotorErrorUI)
-            {
-                EA_UIManager.Instance.ContainsError = true;
-                EA_UIManager.Instance.ResetText(EA_UIManager.Instance.TextRotorError);
-                Debug.Log($"RESETTEXT Rotor {id}");
-                //Reset the text
-                EA_UIManager.Instance.AddText(EA_UIManager.Instance.TextRotorError, $"There is an error on rotor {id}\n");
-                Debug.Log($"ADD ERROR Rotor {id}");
-                //Add error to text
-                EA_UIManager.Instance.SetActiveUI(EA_UIManager.Instance.PanelErrorRotor, true);
-                Debug.Log($"ACTIVE Rotor {id}");
-                //Show errors
-            }
-            return;
+        notchLetter = char.ToUpper(_configNotch.ToCharArray()[0]);
     }
 
     void InitRotorEncodageAller()
@@ -108,18 +97,33 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         }
     }
 
-    public void RotateRotorManyTimes(int _nbtimes)
+    /*public void RotateRotorManyTimes(int _nbtimes)
     {
         for (int i = 0; i < _nbtimes; i++)
         {
             RotateRotor();
         }
-    }
+    }*/
 
-    public void RotateRotor()
+    /*public void RotateRotor()
     {
         float angle = transform.eulerAngles.z;
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, angle - (360f/26f));
+        numberFirstLetter++;
+        numberFirstLetter = numberFirstLetter > 25 ? 0 : numberFirstLetter;
+        firstLetter = EA_Letters.intToLetters[numberFirstLetter];
+    }*/
+
+    public void RotateRotor()
+    {
+        //int _targetInt = EA_Letters.lettersToInt[_target];
+        if (IsTurned) return;
+        transform.eulerAngles = Vector3.MoveTowards(transform.eulerAngles,targetRota,Time.deltaTime* speedRota);
+    }
+
+    public void SetNextTarget()
+    {
+        targetRota = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - (360f / 26f));
         numberFirstLetter++;
         numberFirstLetter = numberFirstLetter > 25 ? 0 : numberFirstLetter;
         firstLetter = EA_Letters.intToLetters[numberFirstLetter];
