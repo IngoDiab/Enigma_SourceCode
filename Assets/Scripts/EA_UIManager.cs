@@ -10,16 +10,33 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
     [SerializeField] Button resetButton = null;
     [SerializeField] Button quitButton = null;
 
+    #region Crypte/Decrypte
     [SerializeField] TMP_InputField enterText = null;
     [SerializeField] TMP_Text resultText = null;
+    #endregion
 
+    #region Config
     [SerializeField] List<TMP_InputField> rotorConfig = new List<TMP_InputField>();
+    [SerializeField] List<TMP_InputField> notchConfig = new List<TMP_InputField>();
     public List<TMP_InputField> RotorConfig => rotorConfig;
+    public List<TMP_InputField> NotchConfig => notchConfig;
+    #endregion
 
-    public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset;
+    #region Error Rotor
+    [SerializeField] Transform panelErrorRotor = null;
+    [SerializeField] TMP_Text textRotorError = null;
+    [SerializeField] bool containsError = false;
+
+    public Transform PanelErrorRotor => panelErrorRotor;
+    public TMP_Text TextRotorError => textRotorError;
+    public bool ContainsError { get => containsError; set => containsError = value; }
+    #endregion
+
+    public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset && IsValidRotorErrorUI;
     public bool IsValidReset => resetButton;
     public bool IsValidQuit => quitButton;
     public bool IsValidInputResult => enterText && resultPanel && resultText;
+    public bool IsValidRotorErrorUI => panelErrorRotor && textRotorError;
 
     protected override void Awake()
     {
@@ -45,27 +62,33 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
         resultText.text = "";
     }
 
-    /*public void SetActiveUI(bool _show)
+    public void SetActiveUI(Transform _panel, bool _show)
     {
-        if (_show) ShowUI();
-        else HideUI();
+        if (_show) ShowUI(_panel);
+        else HideUI(_panel);
     }
 
-    public void ShowUI()
+    public void ShowUI(Transform _panel)
     {
         if (!IsValidUI) return;
-        resetButton.gameObject.SetActive(true);
-        enterText.gameObject.SetActive(true);
-        resultPanel.gameObject.SetActive(true);
+        _panel.gameObject.SetActive(true);
     }
 
-    public void HideUI()
+    public void HideUI(Transform _panel)
     {
         if (!IsValidUI) return;
-        resetButton.gameObject.SetActive(false);
-        enterText.gameObject.SetActive(false);
-        resultPanel.gameObject.SetActive(false);
-    }*/
+        _panel.gameObject.SetActive(false);
+    }
+
+    public void AddText(TMP_Text _text, string _addText)
+    {
+        _text.text += $"{_addText}";
+    }
+
+    public void ResetText(TMP_Text _text)
+    {
+        _text.text = $"";
+    }
 
     public void Quit()
     {
