@@ -8,7 +8,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     Dictionary<char, char> encodageAller = new Dictionary<char, char>();
     Dictionary<char, char> encodageRetour = new Dictionary<char, char>();
     [SerializeField] char[] encodeLetters = new char[26];
-    [SerializeField] char firstLetterRotorBegin = 'A';
+    /*[SerializeField] char firstLetterRotorBegin = 'A';*/
     [SerializeField] char notchLetter = 'A';
 
     float valueToFixTheRotorDoor = 5.697001f;
@@ -37,9 +37,15 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
 
     void InitRotor()
     {
-        firstLetter = firstLetterRotorBegin;
-        numberFirstLetter = EA_Letters.lettersToInt[firstLetterRotorBegin];
-        transform.eulerAngles = new Vector3(0, 0, valueToFixTheRotorDoor - (360f / 26f) * numberFirstLetter + 1);
+        string _config = EA_UIManager.Instance.RotorConfig[id-1].text;      //id-1 because Rotor1 has id 1 but in the RotorConfig, its letter is the 0
+        if (_config.Length != 1) Debug.Log($"Erreur Rotor {1}");//ERREUR
+        else
+        {
+            char _beginLetter = char.ToUpper(_config.ToCharArray()[0]);
+            firstLetter = _beginLetter;
+            numberFirstLetter = EA_Letters.lettersToInt[_beginLetter];
+            transform.eulerAngles = new Vector3(0, 0, valueToFixTheRotorDoor - (360f / 26f) * numberFirstLetter + 1);
+        }
     }
 
     void InitRotorEncodageAller()

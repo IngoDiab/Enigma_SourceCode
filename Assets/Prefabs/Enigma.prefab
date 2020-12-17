@@ -6237,7 +6237,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 3
   encodeLetters: 42004400460048004a004c004300500052005400580056005a004e005900450049005700470041004b004d005500530051004f00
-  firstLetter: 65
   notchLetter: 86
 --- !u!1 &1557851068583827023
 GameObject:
@@ -7948,7 +7947,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2
   encodeLetters: 41004a0044004b005300490052005500580042004c004800570054004d004300510047005a004e0050005900460056004f004500
-  firstLetter: 65
   notchLetter: 69
 --- !u!1 &4696133029259535737
 GameObject:
@@ -8157,7 +8155,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   encodeLetters: 45004b004d0046004c0047004400510056005a004e0054004f005700590048005800550053005000410049004200520043004a00
-  firstLetter: 65
   notchLetter: 81
 --- !u!1 &4925801706280424357
 GameObject:
@@ -8324,13 +8321,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5441256147925634829}
-  m_LocalRotation: {x: -0.009546787, y: -0.00000008402046, z: -0.000008800514, w: 0.9999545}
+  m_LocalRotation: {x: 0.0046238177, y: -0.0017326744, z: -0.000025343146, w: 0.99998784}
   m_LocalPosition: {x: 3.1567469, y: 3.6422884, z: 2.9075184}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5697095453182249247}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: -2, y: -4, z: -1}
+  m_LocalEulerAnglesHint: {x: 0.53000003, y: -0.19900002, z: -0.004}
 --- !u!33 &1771850160370972131
 MeshFilter:
   m_ObjectHideFlags: 0

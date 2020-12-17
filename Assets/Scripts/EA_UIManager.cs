@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 public class EA_UIManager : EA_Singleton<EA_UIManager>
 {
@@ -11,6 +12,9 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
 
     [SerializeField] TMP_InputField enterText = null;
     [SerializeField] TMP_Text resultText = null;
+
+    [SerializeField] List<TMP_InputField> rotorConfig = new List<TMP_InputField>();
+    public List<TMP_InputField> RotorConfig => rotorConfig;
 
     public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset;
     public bool IsValidReset => resetButton;
