@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
-
 public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_Rotor>
 {
-    public event Action OnTick = null;
+    #region Action
+    public event Action OnUpdateRotors = null;
+    #endregion
 
+    #region F/P
     Dictionary<int, EA_Rotor> items = new Dictionary<int, EA_Rotor>();
-
     public Dictionary<int, EA_Rotor> Items => items;
+    #endregion
 
-    protected override void Awake()
-    {
-        base.Awake();
-        OnTick += () => EA_SoundManager.Instance.PlaySound(AudioType.Tick);
-    }
-
+    #region UnityMethods
     private void OnDestroy()
     {
-        OnTick = null;
+        OnUpdateRotor = null;
     }
+    #endregion
 
-   
+    #region Methods
+    /// <summary>
+    /// Init the rotors (and show errors if there is any)
+    /// </summary>
     void InitRotors()
     {
         foreach (KeyValuePair<int, EA_Rotor> _rotor in items)
@@ -35,10 +35,15 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
         EA_ErrorManager.Instance.SetUIErrorPanelNotch();
     }
 
+    /// <summary>
+    /// Add a rotor
+    /// </summary>
+    /// <param name="_rotor">Rotor to add</param>
     public void Add(EA_Rotor _rotor)
     {
         items.Add(_rotor.ID, _rotor);
         _rotor.name += $" [MANAGED]";
+        OnUpdateRotors += _rotor.OnUpdateRotor;
     }
 
     public void Disable(int _key)
@@ -51,50 +56,65 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
         
     }
 
+    /// <summary>
+    /// Check if a rotor exist
+    /// </summary>
+    /// <param name="_key">Rotor's key</param>
+    /// <returns></returns>
     public bool Exists(int _key)
     {
         return items.ContainsKey(_key);
     }
 
+    /// <summary>
+    /// Get a rotor
+    /// </summary>
+    /// <param name="_key">Rotor's key</param>
+    /// <returns></returns>
     public EA_Rotor Get(int _key)
     {
         if (!Exists(_key)) return null;
         return items[_key];
     }
 
+    /// <summary>
+    /// Remove a rotor
+    /// </summary>
+    /// <param name="_key">Rotor's key</param>
     public void Remove(int _key)
     {
         if (Exists(_key))
             items.Remove(_key);
     }
 
+    /// <summary>
+    /// Reset all rotors
+    /// </summary>
     public void ResetAllRotors()
     {
-        /*foreach (KeyValuePair<int,EA_Rotor> _rotor in items)
-        {
-            _rotor.Value.ResetRotor();
-            Debug.Log($"Rotor {_rotor.Value.ID} reset");
-        }*/
         InitRotors();
-        OnTick.Invoke();
     }
 
-    public void RotateRotor(int _id)
-    {
-        EA_Rotor _rotor = Get(_id);
-        if (_rotor) _rotor.RotateRotor();
-    }
-
+    /// <summary>
+    /// Set the step in the rotor rotation
+    /// </summary>
+    /// <param name="_id">Rotor id</param>
     public void SetNextTarget(int _id)
     {
         EA_Rotor _rotor = Get(_id);
         if (_rotor) _rotor.SetNextTarget();
     }
 
+    /// <summary>
+    /// Check if the rotor is on its notch
+    /// </summary>
+    /// <param name="_id">Rotor id</param>
+    /// <returns></returns>
     public bool CheckRotorAboutToNotch(int _id)
     {
         EA_Rotor _rotor = EA_RotorManager.Instance.Get(_id);
         if (!_rotor) return false;
         return _rotor.IsAboutToNotch;
     }
+    #endregion
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
 {
@@ -11,6 +9,11 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
     public string MsgRotor => msgRotor;
     public List<string> ErrorsRotor => errorsRotor;
 
+    /// <summary>
+    /// Save a message for the error
+    /// </summary>
+    /// <param name="_id">Rotor which have an issue</param>
+    /// <returns></returns>
     public string ErrorRotor(int _id)
     {
         string _rotorError = "";
@@ -18,6 +21,10 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
         return _rotorError;
     }
 
+    /// <summary>
+    /// Merge all saved messages
+    /// </summary>
+    /// <param name="_errors">All errors</param>
     public void MergeErrorsRotor(List<string> _errors)
     {
         msgRotor = "";
@@ -27,6 +34,9 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
         }
     }
 
+    /// <summary>
+    /// Set UIErrorRotor if there is at least one error
+    /// </summary>
     public void SetUIErrorPanelRotor()
     {
         EA_UIManager.Instance.ResetText(EA_UIManager.Instance.TextRotorError);
@@ -46,6 +56,11 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
     public string MsgNotch => msgNotch;
     public List<string> ErrorsNotch => errorsNotch;
 
+    /// <summary>
+    /// Save a message for the error
+    /// </summary>
+    /// <param name="_id">Notch which have an issue</param>
+    /// <returns></returns>
     public string ErrorNotch(int _id)
     {
         string _notchError = "";
@@ -53,6 +68,10 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
         return _notchError;
     }
 
+    /// <summary>
+    /// Merge all saved messages
+    /// </summary>
+    /// <param name="_errors">All errors</param>
     public void MergeErrorsNotch(List<string> _errors)
     {
         msgNotch = "";
@@ -62,6 +81,9 @@ public class EA_ErrorManager : EA_Singleton<EA_ErrorManager>
         }
     }
 
+    /// <summary>
+    /// Set UIErrorNotch if there is at least one error
+    /// </summary>
     public void SetUIErrorPanelNotch()
     {
         EA_UIManager.Instance.ResetText(EA_UIManager.Instance.TextNotchError);

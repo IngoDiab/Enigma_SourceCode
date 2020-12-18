@@ -1,10 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public static class EA_Letters
 {
-    [SerializeField] public static Dictionary<int,char> intToLetters = new Dictionary<int, char>() {
+    #region F/P
+    /// <summary>
+    /// Transform int to latin alphabetic letter (letter at this position in the alphabet - 1)
+    /// </summary>
+    public static Dictionary<int,char> intToLetters = new Dictionary<int, char>() {
         {0, 'A' },
         {1, 'B' },
         {2, 'C' },
@@ -32,8 +34,11 @@ public static class EA_Letters
         {24,'Y' }, 
         {25,'Z' }
     };
-    
-    [SerializeField] public static Dictionary<char,int> lettersToInt = new Dictionary<char, int>() {
+
+    /// <summary>
+    /// Transform latin alphabetic letter to int (letter position in the alphabet - 1)
+    /// </summary>
+    public static Dictionary<char,int> lettersToInt = new Dictionary<char, int>() {
         {'A',0 },
         {'B',1 },
         {'C',2 },
@@ -61,4 +66,5 @@ public static class EA_Letters
         {'Y',24 }, 
         {'Z',25 }
     };
+    #endregion
 }

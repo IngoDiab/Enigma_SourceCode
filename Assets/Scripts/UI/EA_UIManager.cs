@@ -6,18 +6,24 @@ using System.Collections.Generic;
 
 public class EA_UIManager : EA_Singleton<EA_UIManager>
 {
-    [SerializeField] Image resultPanel = null;
+    #region F/P
+
+    #region GeneralUI
     [SerializeField] Button resetButton = null;
     [SerializeField] Button quitButton = null;
+    #endregion
 
-    #region Crypte/Decrypte
+    #region InputText
     [SerializeField] TMP_InputField enterText = null;
-    [SerializeField] TMP_Text resultText = null;
-
     public TMP_InputField EnterText => enterText;
     #endregion
 
-    #region Config
+    #region OutputText
+    [SerializeField] Transform resultPanel = null;
+    [SerializeField] TMP_Text resultText = null;
+    #endregion
+
+    #region Configs
     [SerializeField] List<TMP_InputField> rotorConfig = new List<TMP_InputField>();
     [SerializeField] List<TMP_InputField> notchConfig = new List<TMP_InputField>();
     public List<TMP_InputField> RotorConfig => rotorConfig;
@@ -40,13 +46,18 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
     public TMP_Text TextNotchError => textNotchError;
     #endregion
 
+    #endregion
+
+    #region UIProperties
     public bool IsValidUI => IsValidInputResult && IsValidQuit && IsValidReset && IsValidRotorErrorUI && IsValidNotchErrorUI;
     public bool IsValidReset => resetButton;
     public bool IsValidQuit => quitButton;
     public bool IsValidInputResult => enterText && resultPanel && resultText;
     public bool IsValidRotorErrorUI => panelErrorRotor && textRotorError;
     public bool IsValidNotchErrorUI => panelErrorNotch && textNotchError;
+    #endregion
 
+    #region UnityMethods
     protected override void Awake()
     {
         base.Awake();
@@ -61,7 +72,12 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
         quitButton.onClick.RemoveListener(Quit);
         enterText.onValueChanged.RemoveListener((_string) => Result());
     }
+    #endregion
 
+    #region Methods
+    /// <summary>
+    /// Reset the lights and rotors
+    /// </summary>
     public void AllReset()
     {
         if (!IsValidReset) return;
@@ -71,40 +87,69 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
         resultText.text = "";
     }
 
+    /// <summary>
+    /// Show/Hide a panel
+    /// </summary>
+    /// <param name="_panel">Panel to show/hide</param>
+    /// <param name="_show">True if show, false if hide</param>
     public void SetActiveUI(Transform _panel, bool _show)
     {
         if (_show) ShowUI(_panel);
         else HideUI(_panel);
     }
 
+    /// <summary>
+    /// Show a panel
+    /// </summary>
+    /// <param name="_panel">Panel to show</param>
     public void ShowUI(Transform _panel)
     {
         if (!IsValidUI) return;
         _panel.gameObject.SetActive(true);
     }
 
+    /// <summary>
+    /// Hide a panel
+    /// </summary>
+    /// <param name="_panel">Panel to hide</param>
     public void HideUI(Transform _panel)
     {
         if (!IsValidUI) return;
         _panel.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Add a text to a TMP_Text
+    /// </summary>
+    /// <param name="_text">Text to add something</param>
+    /// <param name="_addText">Text to add</param>
     public void AddText(TMP_Text _text, string _addText)
     {
         _text.text += $"{_addText}";
     }
 
+    /// <summary>
+    /// Reset a TMP_Text
+    /// </summary>
+    /// <param name="_text">Text to reset</param>
     public void ResetText(TMP_Text _text)
     {
         _text.text = $"";
     }
 
+    /// <summary>
+    /// Quit the application
+    /// </summary>
     public void Quit()
     {
         if (!IsValidQuit) return;
-        Application.Quit();
+        Application.Quit(0);
     }
 
+    /// <summary>
+    /// Get the last letter of the input field
+    /// </summary>
+    /// <returns>The last character of the input field or '\0' if there's an issue</returns>
     public char GetLastLetter()
     {
         if (!IsValidInputResult) return '\0';
@@ -115,17 +160,25 @@ public class EA_UIManager : EA_Singleton<EA_UIManager>
         return '\0';
     }
 
+    /// <summary>
+    /// Add a letter to the result text
+    /// </summary>
+    /// <param name="_letter">Letter to add</param>
     public void AddLetter(char _letter)
     {
         if (_letter.Equals('\0')) return;
         resultText.text += $"{_letter}";
     }
 
+    /// <summary>
+    /// Manage the result (from input text to result text)
+    /// </summary>
     public void Result()
     {
         char _lastLetter = GetLastLetter();
-        char _lastLetterCrypted = EA_Enigma.Instance.Decode(_lastLetter);
+        char _lastLetterCrypted = EA_Enigma.Instance.Encrypt(_lastLetter);
         if (_lastLetter.Equals('\0')) return;
         AddLetter(_lastLetterCrypted);
     }
+    #endregion
 }

@@ -1,9 +1,15 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EA_Rotor : MonoBehaviour, IItem<int>
 {
+    #region Action
+    public event Action OnTick = null;
+    public event Action OnUpdateRotor = null;
+    #endregion
+
+    #region F/P
     [SerializeField] int id = 0;
     [SerializeField] float speedRota = 5;
     Dictionary<char, char> encodageAller = new Dictionary<char, char>();
@@ -12,46 +18,56 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     [SerializeField, Range(0, 100)] float minDistance = 1;
     [SerializeField] char notchLetter = 'A';
 
-    Vector3 targetRota = Vector3.zero;
+    float angle = 0;
 
-    float valueToFixTheRotorDoor = 5.697001f;
+    float valueToFixTheRotorDoor = 6.972001f;
 
     char firstLetter = '\0';
     int numberFirstLetter = 0;  //Place dans l'alphabet - 1
 
     public int ID => id;
-    public bool IsTurned()
-    {
-        if((transform.eulerAngles.z - targetRota.z) < 0)
-        Vector3.Distance(transform.eulerAngles, targetRota) < minDistance;
-    }
     public bool IsAboutToNotch => firstLetter.Equals(notchLetter);
     public bool IsEnabled => true;
     public int NumberFirstLetter => numberFirstLetter;
     public Dictionary<char, char> EncodageAller => encodageAller;
     public Dictionary<char, char> EncodageRetour => encodageRetour;
+    #endregion
+
+    #region UnityMethods
+    private void Awake()
+    {
+        OnTick += () => EA_SoundManager.Instance.PlaySound(AudioType.Tick);
+        OnUpdateRotor += RotateRotor;
+    }
+
     private void Start()
     {
-        targetRota = transform.eulerAngles;
         InitRotor();
-        InitRotorEncodageAller();
-        InitRotorEncodageRetour();
+        InitEncryptRotorForward();
+        InitEncryptRotorBackward();
         EA_RotorManager.Instance.Add(this);
     }
 
     private void OnDestroy()
     {
         EA_RotorManager.Instance.Remove(id);
+        OnTick = null;
+        OnUpdateRotor = null;
     }
 
-    private void Update()
+    /*private void Update()
     {
         RotateRotor();
-    }
+    }*/
+    #endregion
 
+    #region Methods
+    /// <summary>
+    /// Init the rotor (and save errors if there is any)
+    /// </summary>
     public void InitRotor()
     {
-        string _configRotor = EA_UIManager.Instance.RotorConfig[id-1].text;      //id-1 because Rotor1 has id 1 but in the RotorConfig, its letter is the 0
+        string _configRotor = EA_UIManager.Instance.RotorConfig[id-1].text;      //id-1 because Rotor1 has id 1 but in the UI RotorConfig, its letter is the 0
         string _configNotch = EA_UIManager.Instance.NotchConfig[id-1].text;
 
         bool isErrorRotor = _configRotor.Length != 1;
@@ -76,7 +92,10 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         notchLetter = char.ToUpper(_configNotch.ToCharArray()[0]);
     }
 
-    void InitRotorEncodageAller()
+    /// <summary>
+    /// Init all associations thanks to encodeLetters (in the input-reflector way)
+    /// </summary>
+    void InitEncryptRotorForward()
     {
         for (int i = 0; i < 26; i++)
         {
@@ -87,7 +106,10 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         }
     }
 
-    void InitRotorEncodageRetour()
+    /// <summary>
+    /// Init all associations thanks to encodageAller (in the reflector-input way)
+    /// </summary>
+    void InitEncryptRotorBackward()
     {
         foreach (KeyValuePair<char,char> _associtaion in encodageAller)
         {
@@ -97,62 +119,35 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         }
     }
 
-    /*public void RotateRotorManyTimes(int _nbtimes)
-    {
-        for (int i = 0; i < _nbtimes; i++)
-        {
-            RotateRotor();
-        }
-    }*/
-
-    /*public void RotateRotor()
-    {
-        float angle = transform.eulerAngles.z;
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, angle - (360f/26f));
-        numberFirstLetter++;
-        numberFirstLetter = numberFirstLetter > 25 ? 0 : numberFirstLetter;
-        firstLetter = EA_Letters.intToLetters[numberFirstLetter];
-    }*/
-
+    /// <summary>
+    /// Rotate the rotor
+    /// </summary>
     public void RotateRotor()
     {
-        //int _targetInt = EA_Letters.lettersToInt[_target];
-        if (IsTurned) return;
-        transform.eulerAngles = Vector3.MoveTowards(transform.eulerAngles,targetRota,Time.deltaTime* speedRota);
+        float targetAngle = -(numberFirstLetter) / 26f * 360 + valueToFixTheRotorDoor;
+        angle = Mathf.Lerp(angle, targetAngle, Time.deltaTime * speedRota);
+        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, angle);
+        if(Mathf.Abs(angle - targetAngle) > .5f)
+            OnTick.Invoke();
     }
 
+    /// <summary>
+    /// Set the target to rotate to
+    /// </summary>
     public void SetNextTarget()
     {
-        targetRota = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - (360f / 26f));
         numberFirstLetter++;
         numberFirstLetter = numberFirstLetter > 25 ? 0 : numberFirstLetter;
         firstLetter = EA_Letters.intToLetters[numberFirstLetter];
     }
 
+    /// <summary>
+    /// Reset the rotor
+    /// </summary>
     public void ResetRotor()
     {
         InitRotor();
         Debug.Log($"First letter : {firstLetter} number {numberFirstLetter}");
-    }
-
-    public void DebugLogEncodage(string _sens)
-    {
-        if (_sens.Equals("Aller"))
-        {
-            foreach (KeyValuePair<char, char> code in encodageAller)
-            {
-                string test = $"{code.Key} a pour valeur {code.Value} dans ce rotor à l'aller";
-                Debug.Log(test);
-            }
-        }
-        else if (_sens.Equals("Retour"))
-        {
-            foreach (KeyValuePair<char, char> code in encodageRetour)
-            {
-                string test = $"{code.Key} a pour valeur {code.Value} dans ce rotor au retour";
-                Debug.Log(test);
-            }
-        }
     }
     public void Enable()
     {
@@ -161,4 +156,5 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     {
         
     }
+#endregion
 }

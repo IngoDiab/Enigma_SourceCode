@@ -1,50 +1,83 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EA_Enigma : EA_Singleton<EA_Enigma>
 {
+    #region Action
     public event Action OnKeyDownSound = null;
+    #endregion
 
+    #region F/P
     [SerializeField] EA_Reflector reflector = null;
+    int nbRotors = 0;
     public bool IsValid => reflector;
+    #endregion
 
+    #region UnityMethods
     protected override void Awake()
     {
         base.Awake();
         OnKeyDownSound += () => EA_SoundManager.Instance.PlaySound(AudioType.KeyDown);
     }
 
+    private void Start()
+    {
+        nbRotors = EA_RotorManager.Instance.Items.Count;
+    }
+
     private void OnDestroy()
     {
         OnKeyDownSound = null;
     }
+    #endregion
 
-    public char Decode(char _char)
+    #region Methods
+    /// <summary>
+    /// Encrypt/Decrypt a char
+    /// </summary>
+    /// <param name="_char"></param>
+    /// <returns></returns>
+    public char Encrypt(char _char)
     {
-        if (_char.Equals('\0')) return '\0';
+        if (_char.Equals('\0') || !IsValid) return '\0';
         OnKeyDownSound?.Invoke();
 
         RotateRotor(1);
+        //Rotate the first Rotor before everything
 
-        char _resultRotor1 = TransitionInputRotor(_char,EA_RotorManager.Instance.Get(1),true);
-        char _resultRotor2 = TransitionRotor(_resultRotor1, EA_RotorManager.Instance.Get(2), EA_RotorManager.Instance.Get(1),true);
-        char _resultRotor3 = TransitionRotor(_resultRotor2, EA_RotorManager.Instance.Get(3), EA_RotorManager.Instance.Get(2),true);
+        char _resultRotorAller = TransitionInputRotor(_char,EA_RotorManager.Instance.Get(1),true);
+        //Transition between the inputs and the first rotor
 
-        char _resultReflector = TransitionRotorReflector(_resultRotor3, EA_RotorManager.Instance.Get(3));
+        for (int i = 1; i < nbRotors; i++)
+        {
+            _resultRotorAller = TransitionRotor(_resultRotorAller, EA_RotorManager.Instance.Get(i + 1), EA_RotorManager.Instance.Get(i), true);
+        }
+        //Transition between every rotor
+ 
+        char _resultReflector = TransitionRotorReflector(_resultRotorAller, EA_RotorManager.Instance.Get(nbRotors));
+        //Transition between the last rotor and the reflector
 
-        char _resultRotor3Back = TransitionInputRotor(_resultReflector, EA_RotorManager.Instance.Get(3),false);
-        char _resultRotor2Back = TransitionRotor(_resultRotor3Back, EA_RotorManager.Instance.Get(2), EA_RotorManager.Instance.Get(3), false);
-        char _resultRotor1Back = TransitionRotor(_resultRotor2Back, EA_RotorManager.Instance.Get(1), EA_RotorManager.Instance.Get(2), false);
+        char _resultRotorBack = TransitionInputRotor(_resultReflector, EA_RotorManager.Instance.Get(nbRotors),false);
+        //Transition between the reflector and the last rotor
 
-        char _result = TransitionRotorOutput(_resultRotor1Back, EA_RotorManager.Instance.Get(1));
+        for (int i = nbRotors - 1; i > 0; i--)
+        {
+            _resultRotorBack = TransitionRotor(_resultRotorBack, EA_RotorManager.Instance.Get(i), EA_RotorManager.Instance.Get(i+1), false);
+        }
+        //Transition between every rotor (backward)
 
-        EA_LightsManager.Instance.Enable(_result);
+        char _finalResult = TransitionRotorOutput(_resultRotorBack, EA_RotorManager.Instance.Get(1));
+        //Final transition between the first rotor and the output
 
-        return _result;
+        EA_LightsManager.Instance.Enable(_finalResult);
+
+        return _finalResult;
     }
 
+    /// <summary>
+    /// Rotate a rotor (and the others if necessary)
+    /// </summary>
+    /// <param name="_id">Rotor to rotate</param>
     void RotateRotor(int _id)
     {
         /*bool _isAboutToNotch = EA_RotorManager.Instance.CheckRotorAboutToNotch(_id);
@@ -65,6 +98,13 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
             EA_RotorManager.Instance.SetNextTarget(_id);
     }
 
+    /// <summary>
+    /// Transition between an the inputs and a rotor
+    /// </summary>
+    /// <param name="_char">Char given by the inputs</param>
+    /// <param name="_rotor">The rotor</param>
+    /// <param name="_way">True if it's in the inputs to reflector way, false if it's in the reflector to inputs way</param>
+    /// <returns></returns>
     char TransitionInputRotor(char _char,EA_Rotor _rotor, bool _way)
     {
         if (_way)
@@ -87,6 +127,14 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
         }
     }
 
+    /// <summary>
+    /// Transition beteween rotors
+    /// </summary>
+    /// <param name="_char">Char given by the _rotorFrom</param>
+    /// <param name="_rotorTo">Rotor that get the char</param>
+    /// <param name="_rotorFrom">Rotor that gave the char</param>
+    /// <param name="_way">True if it's in the inputs to reflector way, false if it's in the reflector to inputs way</param>
+    /// <returns></returns>
     char TransitionRotor(char _char, EA_Rotor _rotorTo, EA_Rotor _rotorFrom, bool _way)
     {
         if (_way)
@@ -113,15 +161,27 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
         }
     }
 
+    /// <summary>
+    /// Transition between the rotor and the reflector
+    /// </summary>
+    /// <param name="_char">Char given by the rotor</param>
+    /// <param name="_rotor">Rotor that gave the char</param>
+    /// <returns></returns>
     char TransitionRotorReflector(char _char, EA_Rotor _rotor)
     {
         int _nbLetter = (EA_Letters.lettersToInt[_char] - _rotor.NumberFirstLetter) % 26;
         _nbLetter = _nbLetter >= 0 ? _nbLetter : 26 + _nbLetter;
         char _charReflectorIn = EA_Letters.intToLetters[_nbLetter];
-        char _charReflectorOut = reflector.Encodage[_charReflectorIn];
+        char _charReflectorOut = reflector.EncryptedData[_charReflectorIn];
         return _charReflectorOut;
     }
 
+    /// <summary>
+    /// Transition between the rotor and the output
+    /// </summary>
+    /// <param name="_char">Char given by the rotor</param>
+    /// <param name="_rotor">Rotor that gave the char</param>
+    /// <returns></returns>
     char TransitionRotorOutput(char _char, EA_Rotor _rotor)
     {
         int _nbLetter = (EA_Letters.lettersToInt[_char] - _rotor.NumberFirstLetter) % 26;
@@ -129,5 +189,7 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
         char _charOutput = EA_Letters.intToLetters[_nbLetter];
         return _charOutput;
     }
+
+    #endregion
 
 }

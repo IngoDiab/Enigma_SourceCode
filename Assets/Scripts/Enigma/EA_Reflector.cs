@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class EA_Reflector : MonoBehaviour
 {
-    Dictionary<char, char> encodage = new Dictionary<char, char>()
+    #region F/P
+    Dictionary<char, char> encryptedData = new Dictionary<char, char>()
     {
         {'A','Y'},
         {'Y','A'},
@@ -46,14 +46,6 @@ public class EA_Reflector : MonoBehaviour
         {'W','V'},
     };
 
-    public Dictionary<char, char> Encodage => encodage;
-
-    void DebugLogEncodage()
-    {
-        foreach (KeyValuePair<char, char> code in encodage)
-        {
-            string test = $"{code.Key} a pour valeur {code.Value} dans le reflector";
-            Debug.Log(test);
-        }
-    }
+    public Dictionary<char, char> EncryptedData => encryptedData;
+    #endregion
 }
