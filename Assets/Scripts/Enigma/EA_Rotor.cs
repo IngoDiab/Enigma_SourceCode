@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -63,8 +64,8 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         string _configRotor = EA_UIManager.Instance.RotorConfig[id-1].text;      //id-1 because Rotor1 has id 1 but in the UI RotorConfig, its letter is the 0
         string _configNotch = EA_UIManager.Instance.NotchConfig[id-1].text;
 
-        bool isErrorRotor = _configRotor.Length != 1;
-        bool isErrorNotch = _configNotch.Length != 1;
+        bool isErrorRotor = _configRotor.Length != 1 || !Regex.Match(_configRotor, @"[A-Z]|[a-z]").Success;
+        bool isErrorNotch = _configNotch.Length != 1 || !Regex.Match(_configNotch, @"[A-Z]|[a-z]").Success;
 
         if (isErrorRotor)
         {
