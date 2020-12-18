@@ -6,7 +6,6 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
 {
     #region Action
     public event Action OnTick = null;
-    public event Action OnUpdateRotor = null;
     #endregion
 
     #region F/P
@@ -14,7 +13,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     [SerializeField] float speedRota = 5;
     Dictionary<char, char> encodageAller = new Dictionary<char, char>();
     Dictionary<char, char> encodageRetour = new Dictionary<char, char>();
-    [SerializeField] char[] encodeLetters = new char[26];
+    [SerializeField] TextAsset code = null;
     [SerializeField, Range(0, 100)] float minDistance = 1;
     [SerializeField] char notchLetter = 'A';
 
@@ -25,6 +24,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     char firstLetter = '\0';
     int numberFirstLetter = 0;  //Place dans l'alphabet - 1
 
+    public bool IsValid => code;
     public int ID => id;
     public bool IsAboutToNotch => firstLetter.Equals(notchLetter);
     public bool IsEnabled => true;
@@ -37,7 +37,6 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     private void Awake()
     {
         OnTick += () => EA_SoundManager.Instance.PlaySound(AudioType.Tick);
-        OnUpdateRotor += RotateRotor;
     }
 
     private void Start()
@@ -52,13 +51,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     {
         EA_RotorManager.Instance.Remove(id);
         OnTick = null;
-        OnUpdateRotor = null;
     }
-
-    /*private void Update()
-    {
-        RotateRotor();
-    }*/
     #endregion
 
     #region Methods
@@ -97,10 +90,13 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
     /// </summary>
     void InitEncryptRotorForward()
     {
+        if (!IsValid) return;
+        char[] _code = code.ToString().ToCharArray();
+        if (_code.Length != 26) return;
         for (int i = 0; i < 26; i++)
         {
             char letterRead = EA_Letters.intToLetters[i];
-            char encodeRead = encodeLetters[i];
+            char encodeRead = _code[i];
 
             encodageAller[letterRead] = encodeRead;
         }
@@ -119,6 +115,11 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         }
     }
 
+    public void UpdateRotor()
+    {
+        RotateRotor();
+    }
+
     /// <summary>
     /// Rotate the rotor
     /// </summary>
@@ -127,8 +128,6 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         float targetAngle = -(numberFirstLetter) / 26f * 360 + valueToFixTheRotorDoor;
         angle = Mathf.Lerp(angle, targetAngle, Time.deltaTime * speedRota);
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, angle);
-        if(Mathf.Abs(angle - targetAngle) > .5f)
-            OnTick.Invoke();
     }
 
     /// <summary>
@@ -139,6 +138,7 @@ public class EA_Rotor : MonoBehaviour, IItem<int>
         numberFirstLetter++;
         numberFirstLetter = numberFirstLetter > 25 ? 0 : numberFirstLetter;
         firstLetter = EA_Letters.intToLetters[numberFirstLetter];
+        OnTick?.Invoke();
     }
 
     /// <summary>

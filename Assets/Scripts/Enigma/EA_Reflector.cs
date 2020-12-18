@@ -4,48 +4,32 @@ using UnityEngine;
 public class EA_Reflector : MonoBehaviour
 {
     #region F/P
-    Dictionary<char, char> encryptedData = new Dictionary<char, char>()
-    {
-        {'A','Y'},
-        {'Y','A'},
-
-        {'B','R'},
-        {'R','B'},
-
-        {'C','U'},
-        {'U','C'},
-
-        {'D','H'},
-        {'H','D'},
-
-        {'E','Q'},
-        {'Q','E'},
-
-        {'F','S'},
-        {'S','F'},
-
-        {'G','L'},
-        {'L','G'},
-
-        {'I','P'},
-        {'P','I'},
-
-        {'J','X'},
-        {'X','J'},
-
-        {'K','N'},
-        {'N','K'},
-
-        {'M','O'},
-        {'O','M'},
-
-        {'T','Z'},
-        {'Z','T'},
-
-        {'V','W'},
-        {'W','V'},
-    };
-
+    [SerializeField] TextAsset code = null;
+    Dictionary<char, char> encryptedData = new Dictionary<char, char>();
     public Dictionary<char, char> EncryptedData => encryptedData;
+    public bool IsValid => code;
+    #endregion
+
+    #region UnityMethods
+    private void Start()
+    {
+        InitReflector();
+    }
+    #endregion
+
+    #region Methods
+    void InitReflector()
+    {
+        if (!IsValid) return;
+        char[] _code = code.ToString().ToCharArray();
+        if (_code.Length != 26) return;
+        for (int i = 0; i < 26; i++)
+        {
+            char letterRead = EA_Letters.intToLetters[i];
+            char encodeRead = _code[i];
+
+            encryptedData[letterRead] = encodeRead;
+        }
+    }
     #endregion
 }

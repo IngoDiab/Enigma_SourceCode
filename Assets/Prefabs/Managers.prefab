@@ -104,19 +104,19 @@ MonoBehaviour:
   - name: Tick
     type: 1
     source: {fileID: 0}
-    volume: 1
+    volume: 0.7
     isLoop: 0
     sound: {fileID: 8300000, guid: 15ba0d13850e16948a199fadb85b819f, type: 3}
   - name: KeyDown
     type: 2
     source: {fileID: 0}
-    volume: 1
+    volume: 0.1
     isLoop: 0
     sound: {fileID: 8300000, guid: d0c096a79683b1f4185106def4d687ad, type: 3}
   - name: Rain
     type: 3
     source: {fileID: 0}
-    volume: 1
+    volume: 0.5
     isLoop: 1
     sound: {fileID: 8300000, guid: 2f61b735ffd8e2f45805b1baaacc7171, type: 3}
 --- !u!114 &7332816769204296128

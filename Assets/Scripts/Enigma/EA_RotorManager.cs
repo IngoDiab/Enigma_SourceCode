@@ -12,9 +12,14 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
     #endregion
 
     #region UnityMethods
+    private void Update()
+    {
+        OnUpdateRotors?.Invoke();
+    }
+
     private void OnDestroy()
     {
-        OnUpdateRotor = null;
+        OnUpdateRotors = null;
     }
     #endregion
 
@@ -43,7 +48,7 @@ public class EA_RotorManager : EA_Singleton<EA_RotorManager>, IHandler<int, EA_R
     {
         items.Add(_rotor.ID, _rotor);
         _rotor.name += $" [MANAGED]";
-        OnUpdateRotors += _rotor.OnUpdateRotor;
+        OnUpdateRotors += _rotor.UpdateRotor;
     }
 
     public void Disable(int _key)

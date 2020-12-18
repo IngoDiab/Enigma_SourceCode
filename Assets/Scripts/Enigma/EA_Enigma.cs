@@ -22,7 +22,7 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
 
     private void Start()
     {
-        nbRotors = EA_RotorManager.Instance.Items.Count;
+        //nbRotors = EA_RotorManager.Instance.Items.Count;
     }
 
     private void OnDestroy()
@@ -41,6 +41,7 @@ public class EA_Enigma : EA_Singleton<EA_Enigma>
     {
         if (_char.Equals('\0') || !IsValid) return '\0';
         OnKeyDownSound?.Invoke();
+        nbRotors = EA_RotorManager.Instance.Items.Count;
 
         RotateRotor(1);
         //Rotate the first Rotor before everything

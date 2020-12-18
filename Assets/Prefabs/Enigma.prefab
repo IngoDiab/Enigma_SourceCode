@@ -2727,6 +2727,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7af7c8ed1509bf4ea8937a0b42da16b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  code: {fileID: 4900000, guid: 00935cb5b3d8c254aa9043cd97ee59fa, type: 3}
 --- !u!1 &828381209
 GameObject:
   m_ObjectHideFlags: 0
@@ -6281,7 +6282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 3
   speedRota: 5
-  encodeLetters: 42004400460048004a004c004300500052005400580056005a004e005900450049005700470041004b004d005500530051004f00
+  code: {fileID: 4900000, guid: 5f1a9edfb0275d94e95b449483e5e4f2, type: 3}
   minDistance: 1
   notchLetter: 86
 --- !u!1 &1557851068583827023
@@ -7993,7 +7994,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 2
   speedRota: 5
-  encodeLetters: 41004a0044004b005300490052005500580042004c004800570054004d004300510047005a004e0050005900460056004f004500
+  code: {fileID: 4900000, guid: 62f3dc2b11c99b64b879c9023d43e631, type: 3}
   minDistance: 1
   notchLetter: 69
 --- !u!1 &4696133029259535737
@@ -8203,7 +8204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 1
   speedRota: 5
-  encodeLetters: 45004b004d0046004c0047004400510056005a004e0054004f005700590048005800550053005000410049004200520043004a00
+  code: {fileID: 4900000, guid: 342bc90f09ce4cb4cb4a86fa551ac4b7, type: 3}
   minDistance: 0.1
   notchLetter: 81
 --- !u!1 &4925801706280424357

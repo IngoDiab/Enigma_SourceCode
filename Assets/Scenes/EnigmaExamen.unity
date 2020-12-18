@@ -2020,21 +2020,6 @@ PrefabInstance:
       propertyPath: allSounds.Array.data[2].source
       value: 
       objectReference: {fileID: 1484596362}
-    - target: {fileID: 7332816769204296131, guid: 7f08b648c4223d64aa2e001ab42fa5b7,
-        type: 3}
-      propertyPath: allSounds.Array.data[0].isLoop
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7332816769204296131, guid: 7f08b648c4223d64aa2e001ab42fa5b7,
-        type: 3}
-      propertyPath: allSounds.Array.data[0].volume
-      value: 0.305
-      objectReference: {fileID: 0}
-    - target: {fileID: 7332816769204296131, guid: 7f08b648c4223d64aa2e001ab42fa5b7,
-        type: 3}
-      propertyPath: allSounds.Array.data[1].volume
-      value: 0.57
-      objectReference: {fileID: 0}
     - target: {fileID: 7332816769204296133, guid: 7f08b648c4223d64aa2e001ab42fa5b7,
         type: 3}
       propertyPath: m_LocalPosition.x
